@@ -1,0 +1,22 @@
+{
+  "amp": true,
+  "base_channels": 32,
+  "batch_size": 8,
+  "checkpoint_dir": "checkpoints/sde_indoor",
+  "crop_size": 256,
+  "data_root": "/media/hzho0442/Project/Code/idea/Low-light/dataset/sde",
+  "epochs": 50,
+  "lambda_ssim": 0.2,
+  "lambda_tv": 0.02,
+  "lr": 0.0002,
+  "max_train_samples": null,
+  "max_val_samples": null,
+  "num_workers": 4,
+  "residual_blocks": 4,
+  "resume": null,
+  "save_every": 5,
+  "seed": 123,
+  "subset": "indoor",
+  "val_every": 1,
+  "weight_decay": 0.0
+}
