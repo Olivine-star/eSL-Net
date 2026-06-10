@@ -32,15 +32,15 @@ class ResidualBlock(nn.Module):
 
 
 class LowLightEnhanceNet(nn.Module):
-    """Small RGB U-Net for paired low-light enhancement."""
+    """Small U-Net for paired low-light enhancement."""
 
-    def __init__(self, base_channels=32, residual_blocks=4):
+    def __init__(self, base_channels=32, residual_blocks=4, in_channels=3, out_channels=3):
         super().__init__()
         c1 = base_channels
         c2 = base_channels * 2
         c3 = base_channels * 4
 
-        self.enc1 = ConvBlock(3, c1)
+        self.enc1 = ConvBlock(in_channels, c1)
         self.down1 = nn.Conv2d(c1, c2, 3, stride=2, padding=1)
         self.enc2 = ConvBlock(c2, c2)
         self.down2 = nn.Conv2d(c2, c3, 3, stride=2, padding=1)
@@ -51,7 +51,7 @@ class LowLightEnhanceNet(nn.Module):
 
         self.dec2 = ConvBlock(c3 + c2, c2)
         self.dec1 = ConvBlock(c2 + c1, c1)
-        self.out = nn.Conv2d(c1, 3, 3, padding=1)
+        self.out = nn.Conv2d(c1, out_channels, 3, padding=1)
 
     def forward(self, x):
         enc1 = self.enc1(x)
@@ -64,5 +64,7 @@ class LowLightEnhanceNet(nn.Module):
         dec1 = self.dec1(torch.cat([up1, enc1], dim=1))
 
         residual = self.out(dec1)
-        x_logit = torch.logit(x.clamp(1e-4, 1.0 - 1e-4))
-        return torch.sigmoid(x_logit + residual)
+        if x.size(1) == residual.size(1):
+            x_logit = torch.logit(x.clamp(1e-4, 1.0 - 1e-4))
+            return torch.sigmoid(x_logit + residual)
+        return torch.sigmoid(residual)
